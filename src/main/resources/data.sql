@@ -1,0 +1,10 @@
+INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L001', 'Spring Boot Workshop', 'John Doe', '2024-10-10 10:00:00', 30);
+INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L002', 'Introduction to QueryDSL', 'Jane Smith', '2024-10-10 14:00:00', 30);
+INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L003', 'Advanced Java Techniques', 'Michael Brown', '2024-10-10 09:30:00', 30);
+INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L004', 'Microservices with Spring', 'Alice Johnson', '2024-10-11 13:00:00', 30);
+INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L005', 'REST API Design', 'Chris Evans', '2024-10-11 11:00:00', 30);
+INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L006', 'Hibernate Deep Dive', 'David White', '2024-10-11 09:00:00', 30);
+INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L007', 'Effective Testing in Java', 'Emily Davis', '2024-10-12 16:00:00', 30);
+INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L008', 'Kafka for Developers', 'Robert Martin', '2024-10-12 10:30:00', 30);
+INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L009', 'Building CI/CD Pipelines', 'Sarah Connor', '2024-10-13 14:30:00', 30);
+INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L010', 'Introduction to Docker', 'James Lee', '2024-10-13 12:00:00', 30);
