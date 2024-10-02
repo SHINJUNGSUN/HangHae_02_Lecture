@@ -25,14 +25,6 @@ public class Lecture {
     @Column(name = "instructor")
     private String instructor;
 
-    @Column(name = "lecture_date")
-    private LocalDateTime lectureDate;
-
-    @Column(name = "max_capacity")
-    private int maxCapacity;
-
-    @OneToMany(mappedBy = "lecture")
-    private List<LectureApplication> lectureApplications = new ArrayList<>();
-
-
+    @Column(name = "description")
+    private String description;
 }

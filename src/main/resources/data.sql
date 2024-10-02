@@ -1,10 +1,17 @@
-INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L001', 'Spring Boot Workshop', 'John Doe', '2024-10-10 10:00:00', 30);
-INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L002', 'Introduction to QueryDSL', 'Jane Smith', '2024-10-10 14:00:00', 30);
-INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L003', 'Advanced Java Techniques', 'Michael Brown', '2024-10-10 09:30:00', 30);
-INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L004', 'Microservices with Spring', 'Alice Johnson', '2024-10-11 13:00:00', 30);
-INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L005', 'REST API Design', 'Chris Evans', '2024-10-11 11:00:00', 30);
-INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L006', 'Hibernate Deep Dive', 'David White', '2024-10-11 09:00:00', 30);
-INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L007', 'Effective Testing in Java', 'Emily Davis', '2024-10-12 16:00:00', 30);
-INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L008', 'Kafka for Developers', 'Robert Martin', '2024-10-12 10:30:00', 30);
-INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L009', 'Building CI/CD Pipelines', 'Sarah Connor', '2024-10-13 14:30:00', 30);
-INSERT INTO lecture (lecture_id, title, instructor, lecture_date, max_capacity) VALUES ('L010', 'Introduction to Docker', 'James Lee', '2024-10-13 12:00:00', 30);
+INSERT INTO lecture (lecture_id, title, instructor, description) VALUES
+    ('L001', 'Introduction to AI', 'Dr. Smith', 'A comprehensive overview of artificial intelligence concepts and applications.'),
+    ('L002', 'Blockchain Technology', 'Prof. Johnson', 'Exploring the fundamentals of blockchain and its various applications in different industries.');
+
+INSERT INTO lecture_session (session_id, lecture_id, session_datetime, max_capacity)
+VALUES
+    ('S001', 'L001', '2024-10-10 09:00:00', 30),
+    ('S002', 'L001', '2024-10-11 09:00:00', 30),
+    ('S003', 'L001', '2024-10-12 09:00:00', 30),
+    ('S004', 'L001', '2024-10-13 09:00:00', 30),
+    ('S005', 'L001', '2024-10-14 09:00:00', 30),
+
+    ('S006', 'L002', '2024-11-10 10:00:00', 30),
+    ('S007', 'L002', '2024-11-11 10:00:00', 30),
+    ('S008', 'L002', '2024-11-12 10:00:00', 30),
+    ('S009', 'L002', '2024-11-13 10:00:00', 30),
+    ('S010', 'L002', '2024-11-14 10:00:00', 30);
