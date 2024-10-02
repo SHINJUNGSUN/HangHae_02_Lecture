@@ -8,6 +8,8 @@ import io.hhplus.lecture.lecture.domain.QLectureSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -15,7 +17,8 @@ import java.util.Optional;
 public class LectureRepositoryImpl implements LectureRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private final LectureApplicantJpaRepository lectureApplicantJpaRepository;
+
+    private final LectureApplicantRepository lectureApplicantRepository;
 
     private final QLectureSession lectureSession = QLectureSession.lectureSession;
 
@@ -28,7 +31,20 @@ public class LectureRepositoryImpl implements LectureRepository {
     }
 
     @Override
+    public List<LectureSession> findLectureSessionList(LocalDateTime start, LocalDateTime end) {
+        return jpaQueryFactory
+                .selectFrom(lectureSession)
+                .where(lectureSession.sessionDatetime.between(start, end))
+                .fetch();
+    }
+
+    @Override
     public LectureApplicant save(LectureApplicant applicant) {
-        return lectureApplicantJpaRepository.save(applicant);
+        return lectureApplicantRepository.save(applicant);
+    }
+
+    @Override
+    public List<LectureApplicant> findApplicantList(String userId) {
+        return lectureApplicantRepository.findByUserId(userId);
     }
 }

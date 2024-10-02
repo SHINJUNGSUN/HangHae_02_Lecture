@@ -34,7 +34,7 @@ public class LectureSession {
     private LocalDateTime sessionDatetime;
 
     @Column(name = "max_capacity")
-    private int max_capacity;
+    private int maxCapacity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")
@@ -44,23 +44,20 @@ public class LectureSession {
     @OneToMany(mappedBy = "lectureSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<LectureApplicant> applicants = new ArrayList<>();
 
-    @PrePersist
-    private void onCreate() {
-        this.sessionId = "S" + TSID.fast();
-    }
-
     public LectureApplicant applyForLecture(String userId) {
 
         if(sessionDatetime.isBefore(LocalDateTime.now())) {
+            log.error(LectureErrors.SESSION_EXPIRED.getErrorMessage());
             throw new LectureException(LectureErrors.SESSION_EXPIRED);
         }
 
-        System.out.println(this.applicants.size());
         if(this.applicants.stream().anyMatch(applicant -> applicant.getUserId().equals(userId))) {
+            log.error(LectureErrors.SESSION_ALREADY_APPLIED.getErrorMessage());
             throw new LectureException(LectureErrors.SESSION_ALREADY_APPLIED);
         }
 
-        if(this.applicants.size() >= this.max_capacity) {
+        if(this.applicants.size() >= this.maxCapacity) {
+            log.error(LectureErrors.SESSION_CAPACITY_EXCEEDED.getErrorMessage());
             throw new LectureException(LectureErrors.SESSION_CAPACITY_EXCEEDED);
         }
 

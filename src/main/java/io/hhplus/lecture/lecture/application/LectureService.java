@@ -5,11 +5,16 @@ import io.hhplus.lecture.common.LectureException;
 import io.hhplus.lecture.lecture.domain.LectureApplicant;
 import io.hhplus.lecture.lecture.domain.LectureRepository;
 import io.hhplus.lecture.lecture.domain.LectureSession;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +28,7 @@ public class LectureService {
 
         // 1. 특강 세션 조회
         LectureSession session = lectureRepository.findLectureSession(request.sessionId()).orElseThrow(() -> {
-            log.error("존재하지 않는 특강 세션입니다.(특강 세션 ID: {})", request.sessionId());
+            log.error(LectureErrors.SESSION_NOT_FOUND.getErrorMessage());
             return new LectureException(LectureErrors.SESSION_NOT_FOUND);
         });
 
@@ -31,8 +36,27 @@ public class LectureService {
         LectureApplicant newApplicant = session.applyForLecture(request.userId());
 
         // 3. 새로운 신청자 정보 저장
-        lectureRepository.save(newApplicant);
+        return LectureDto.LectureApplyResponse.of(session, lectureRepository.save(newApplicant));
+    }
 
-        return LectureDto.LectureApplyResponse.of(session, newApplicant);
+    public List<LectureDto.LectureSessionInfo> searchLectureSessions(LocalDate date) {
+
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(LocalTime.MAX);
+
+        List<LectureSession> sessions = lectureRepository.findLectureSessionList(start, end);
+
+        return sessions.stream()
+                .map(LectureDto.LectureSessionInfo::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<LectureDto.LectureApplicantInfo> searchLectureApplicants(String userId) {
+
+        List<LectureApplicant> applicants = lectureRepository.findApplicantList(userId);
+
+        return applicants.stream()
+                .map(LectureDto.LectureApplicantInfo::from)
+                .collect(Collectors.toList());
     }
 }

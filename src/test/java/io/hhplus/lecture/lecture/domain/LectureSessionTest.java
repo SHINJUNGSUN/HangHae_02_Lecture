@@ -13,6 +13,28 @@ import static org.junit.jupiter.api.Assertions.*;
 class LectureSessionTest {
 
     @Test
+    @DisplayName("특강 신청 성공")
+    void applyForLecture_success() {
+        // Given
+        String userId = "U001";
+
+        LectureSession lectureSession = LectureSession.builder()
+                .lectureId("L001")
+                .sessionId("S001")
+                .sessionDatetime(LocalDateTime.now().plusDays(3))
+                .applicants(new ArrayList<>())
+                .maxCapacity(30)
+                .build();
+
+        // When
+        LectureApplicant applicant = lectureSession.applyForLecture(userId);
+
+        // Then
+        assertEquals(userId, applicant.getUserId());
+        assertEquals(lectureSession.getSessionId(), applicant.getSessionId());
+    }
+
+    @Test
     @DisplayName("이미 지난 특강 세션인 경우, 실패")
     void applyForLecture_throwsException_whenLectureSessionIsInThePast() {
         // Given
@@ -21,7 +43,7 @@ class LectureSessionTest {
                 .lectureId("L001")
                 .sessionId("S001")
                 .sessionDatetime(LocalDateTime.now().minusDays(1))
-                .max_capacity(30)
+                .maxCapacity(30)
                 .build();
 
         // When & Then
@@ -47,7 +69,7 @@ class LectureSessionTest {
                 .sessionId("S001")
                 .sessionDatetime(LocalDateTime.now().plusDays(3))
                 .applicants(applicants)
-                .max_capacity(30)
+                .maxCapacity(30)
                 .build();
 
         // When & Then
@@ -75,7 +97,7 @@ class LectureSessionTest {
                 .sessionId("S001")
                 .sessionDatetime(LocalDateTime.now().plusDays(3))
                 .applicants(applicants)
-                .max_capacity(1)
+                .maxCapacity(1)
                 .build();
 
         // When & Then
