@@ -5,9 +5,13 @@ import io.hhplus.lecture.common.LectureException;
 import io.hhplus.lecture.lecture.domain.LectureApplicant;
 import io.hhplus.lecture.lecture.domain.LectureRepository;
 import io.hhplus.lecture.lecture.domain.LectureSession;
+import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -24,19 +28,24 @@ public class LectureService {
 
     private final LectureRepository lectureRepository;
 
+    @Transactional
     public LectureDto.LectureApplyResponse applyForLecture(LectureDto.LectureApplyRequest request) {
+        try {
+            // 1. 특강 세션 조회
+            LectureSession session = lectureRepository.findLectureSession(request.sessionId()).orElseThrow(() -> {
+                log.error(LectureErrors.SESSION_NOT_FOUND.getErrorMessage());
+                return new LectureException(LectureErrors.SESSION_NOT_FOUND);
+            });
 
-        // 1. 특강 세션 조회
-        LectureSession session = lectureRepository.findLectureSession(request.sessionId()).orElseThrow(() -> {
-            log.error(LectureErrors.SESSION_NOT_FOUND.getErrorMessage());
-            return new LectureException(LectureErrors.SESSION_NOT_FOUND);
-        });
+            // 2. 특강 세션 신청 처리
+            LectureApplicant newApplicant = session.applyForLecture(request.userId());
 
-        // 2. 특강 세션 신청 처리
-        LectureApplicant newApplicant = session.applyForLecture(request.userId());
-
-        // 3. 새로운 신청자 정보 저장
-        return LectureDto.LectureApplyResponse.of(session, lectureRepository.save(newApplicant));
+            // 3. 새로운 신청자 정보 저장
+            return LectureDto.LectureApplyResponse.of(lectureRepository.save(session), lectureRepository.save(newApplicant));
+        } catch (ObjectOptimisticLockingFailureException e) {
+            log.error(LectureErrors.SESSION_APPLICANT_FAIL.getErrorMessage());
+          throw new LectureException(LectureErrors.SESSION_APPLICANT_FAIL);
+        }
     }
 
     public List<LectureDto.LectureSessionInfo> searchLectureSessions(LocalDate date) {
@@ -53,7 +62,7 @@ public class LectureService {
 
     public List<LectureDto.LectureApplicantInfo> searchLectureApplicants(String userId) {
 
-        List<LectureApplicant> applicants = lectureRepository.findApplicantList(userId);
+        List<LectureApplicant> applicants = lectureRepository.findLectureApplicantListByUserId(userId);
 
         return applicants.stream()
                 .map(LectureDto.LectureApplicantInfo::from)

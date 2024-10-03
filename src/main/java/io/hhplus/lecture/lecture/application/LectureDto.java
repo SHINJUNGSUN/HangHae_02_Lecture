@@ -56,7 +56,7 @@ public class LectureDto {
                     .instructor(session.getLecture().getInstructor())
                     .sessionDatetime(session.getSessionDatetime())
                     .maxCapacity(session.getMaxCapacity())
-                    .applicantsCount(session.getApplicants().size())
+                    .applicantsCount(session.getApplicantsCount())
                     .build();
 
         }

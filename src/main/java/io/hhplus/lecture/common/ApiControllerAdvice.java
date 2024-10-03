@@ -16,7 +16,7 @@ public class ApiControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+    public ResponseEntity<ErrorResponse> handleException() {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(999999, "서비스 에러가 발생했습니다."));
     }

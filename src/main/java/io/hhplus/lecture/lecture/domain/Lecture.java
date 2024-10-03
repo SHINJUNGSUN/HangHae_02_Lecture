@@ -3,10 +3,6 @@ package io.hhplus.lecture.lecture.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Builder
 @AllArgsConstructor

@@ -2,16 +2,12 @@ package io.hhplus.lecture.lecture.domain;
 
 import io.hhplus.lecture.common.LectureErrors;
 import io.hhplus.lecture.common.LectureException;
-import io.hhplus.lecture.lecture.application.LectureService;
-import io.hypersistence.tsid.TSID;
 import jakarta.persistence.*;
 import lombok.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Builder
@@ -21,7 +17,7 @@ import java.util.List;
 @Table(name = "lecture_session")
 public class LectureSession {
 
-    private static final Logger log = LoggerFactory.getLogger(LectureService.class);
+    private static final Logger log = LoggerFactory.getLogger(LectureSession.class);
 
     @Id
     @Column(name = "session_id")
@@ -36,13 +32,15 @@ public class LectureSession {
     @Column(name = "max_capacity")
     private int maxCapacity;
 
+    @Column(name = "applicants_count")
+    private int applicantsCount;
+
+//    @Version
+//    private long version;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecture_id")
     private Lecture lecture;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "lectureSession", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<LectureApplicant> applicants = new ArrayList<>();
 
     public LectureApplicant applyForLecture(String userId) {
 
@@ -51,15 +49,12 @@ public class LectureSession {
             throw new LectureException(LectureErrors.SESSION_EXPIRED);
         }
 
-        if(this.applicants.stream().anyMatch(applicant -> applicant.getUserId().equals(userId))) {
-            log.error(LectureErrors.SESSION_ALREADY_APPLIED.getErrorMessage());
-            throw new LectureException(LectureErrors.SESSION_ALREADY_APPLIED);
-        }
-
-        if(this.applicants.size() >= this.maxCapacity) {
+        if(this.applicantsCount >= this.maxCapacity) {
             log.error(LectureErrors.SESSION_CAPACITY_EXCEEDED.getErrorMessage());
             throw new LectureException(LectureErrors.SESSION_CAPACITY_EXCEEDED);
         }
+
+        this.applicantsCount++;
 
         return LectureApplicant.builder()
                 .sessionId(this.sessionId)

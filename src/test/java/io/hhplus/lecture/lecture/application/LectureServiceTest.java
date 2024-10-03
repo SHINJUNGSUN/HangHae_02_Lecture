@@ -57,7 +57,7 @@ class LectureServiceTest {
                 .sessionDatetime(LocalDateTime.now().plusDays(3))
                 .maxCapacity(30)
                 .lecture(lecture)
-                .applicants(new ArrayList<>())
+                .applicantsCount(0)
                 .build();
 
         LectureApplicant newApplicant = LectureApplicant.builder()
@@ -110,7 +110,7 @@ class LectureServiceTest {
                 .sessionDatetime(start)
                 .lecture(lecture)
                 .maxCapacity(30)
-                .applicants(new ArrayList<>())
+                .applicantsCount(0)
                 .build();
 
         LectureSession session02 = LectureSession.builder()
@@ -119,7 +119,7 @@ class LectureServiceTest {
                 .sessionDatetime(start.plusHours(3))
                 .lecture(lecture)
                 .maxCapacity(30)
-                .applicants(new ArrayList<>())
+                .applicantsCount(0)
                 .build();
 
         when(lectureRepository.findLectureSessionList(start, end)).thenReturn(Arrays.asList(session01, session02));
@@ -149,7 +149,7 @@ class LectureServiceTest {
                 .sessionDatetime(LocalDateTime.now().plusDays(3))
                 .lecture(lecture)
                 .maxCapacity(30)
-                .applicants(new ArrayList<>())
+                .applicantsCount(1)
                 .build();
 
         LectureSession session02 = LectureSession.builder()
@@ -158,7 +158,7 @@ class LectureServiceTest {
                 .sessionDatetime(LocalDateTime.now().plusDays(4))
                 .lecture(lecture)
                 .maxCapacity(30)
-                .applicants(new ArrayList<>())
+                .applicantsCount(1)
                 .build();
 
         LectureApplicant applicant01 = LectureApplicant.builder()
@@ -175,7 +175,7 @@ class LectureServiceTest {
                 .lectureSession(session02)
                 .build();
 
-        when(lectureRepository.findApplicantList(userId)).thenReturn(Arrays.asList(applicant01, applicant02));
+        when(lectureRepository.findLectureApplicantListByUserId(userId)).thenReturn(Arrays.asList(applicant01, applicant02));
 
         // When
         List<LectureDto.LectureApplicantInfo> result = lectureService.searchLectureApplicants(userId);
