@@ -13,8 +13,8 @@ spring:
      ddl-auto: create
    properties:
      hibernate:
-       show_sql: true
-       format_sql: true
+       show_sql: false
+       format_sql: false
    defer-datasource-initialization: true
   h2:
     console:

@@ -22,7 +22,7 @@ class LectureSessionTest {
                 .lectureId("L001")
                 .sessionId("S001")
                 .sessionDatetime(LocalDateTime.now().plusDays(3))
-                .applicants(new ArrayList<>())
+                .applicantsCount(0)
                 .maxCapacity(30)
                 .build();
 
@@ -51,53 +51,18 @@ class LectureSessionTest {
     }
 
     @Test
-    @DisplayName("이미 신청이 완료된 특강 세션인 경우, 실패")
-    void applyForLecture_throwsException_whenAlreadyApplied() {
-        // Given
-        String userId = "U001";
-
-        List<LectureApplicant> applicants = new ArrayList<>();
-        applicants.add(LectureApplicant.builder()
-                .lectureApplicantId("LA001")
-                .sessionId("S001")
-                .userId(userId)
-                .appliedAt(LocalDateTime.now())
-                .build());
-
-        LectureSession lectureSession = LectureSession.builder()
-                .lectureId("L001")
-                .sessionId("S001")
-                .sessionDatetime(LocalDateTime.now().plusDays(3))
-                .applicants(applicants)
-                .maxCapacity(30)
-                .build();
-
-        // When & Then
-        assertThrows(LectureException.class, () -> lectureSession.applyForLecture(userId));
-    }
-
-    @Test
     @DisplayName("인원이 가득찬 특강 세션인 경우, 실패")
     void applyForLecture_throwsException_whenMaxCapacityReached() {
         // Given
-        String userId = "U002";
-
-        List<LectureApplicant> applicants = new ArrayList<>();
-        applicants.add(LectureApplicant
-                .builder()
-                .lectureApplicantId("LA001")
-                .sessionId("S001")
-                .userId("U001")
-                .appliedAt(LocalDateTime.now())
-                .build());
+        String userId = "U001";
 
         LectureSession lectureSession = LectureSession
                 .builder()
                 .lectureId("L001")
                 .sessionId("S001")
                 .sessionDatetime(LocalDateTime.now().plusDays(3))
-                .applicants(applicants)
-                .maxCapacity(1)
+                .applicantsCount(30)
+                .maxCapacity(30)
                 .build();
 
         // When & Then

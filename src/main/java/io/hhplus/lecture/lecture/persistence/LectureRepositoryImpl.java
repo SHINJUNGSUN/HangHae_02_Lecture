@@ -1,10 +1,8 @@
 package io.hhplus.lecture.lecture.persistence;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.hhplus.lecture.lecture.domain.LectureApplicant;
 import io.hhplus.lecture.lecture.domain.LectureRepository;
 import io.hhplus.lecture.lecture.domain.LectureSession;
-import io.hhplus.lecture.lecture.domain.QLectureSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -16,26 +14,22 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class LectureRepositoryImpl implements LectureRepository {
 
-    private final JPAQueryFactory jpaQueryFactory;
-
+    private final LectureSessionRepository lectureSessionRepository;
     private final LectureApplicantRepository lectureApplicantRepository;
-
-    private final QLectureSession lectureSession = QLectureSession.lectureSession;
 
     @Override
     public Optional<LectureSession> findLectureSession(String sessionId) {
-        return Optional.ofNullable(jpaQueryFactory
-                .selectFrom(lectureSession)
-                .where(lectureSession.sessionId.eq(sessionId))
-                .fetchOne());
+        return lectureSessionRepository.findLectureSessionBySessionId(sessionId);
     }
 
     @Override
     public List<LectureSession> findLectureSessionList(LocalDateTime start, LocalDateTime end) {
-        return jpaQueryFactory
-                .selectFrom(lectureSession)
-                .where(lectureSession.sessionDatetime.between(start, end))
-                .fetch();
+        return lectureSessionRepository.findBySessionDatetimeBetween(start, end);
+    }
+
+    @Override
+    public LectureSession save(LectureSession session) {
+        return lectureSessionRepository.save(session);
     }
 
     @Override
@@ -44,7 +38,12 @@ public class LectureRepositoryImpl implements LectureRepository {
     }
 
     @Override
-    public List<LectureApplicant> findApplicantList(String userId) {
+    public List<LectureApplicant> findLectureApplicantListByUserId(String userId) {
         return lectureApplicantRepository.findByUserId(userId);
+    }
+
+    @Override
+    public List<LectureApplicant> findLectureApplicantListBySessionId(String sessionId) {
+        return lectureApplicantRepository.findBySessionId(sessionId);
     }
 }
