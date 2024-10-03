@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class LectureApplicationTests {
 
-	private static final Logger log = LoggerFactory.getLogger(LectureApplicationTests.class);
-
 	@Autowired
 	LectureService lectureService;
 
@@ -64,9 +62,41 @@ class LectureApplicationTests {
 		LectureSession session = lectureRepository.findLectureSession(sessionId).orElseThrow();
 		List<LectureApplicant> lectureApplicants = lectureRepository.findLectureApplicantListBySessionId(sessionId);
 
-		log.info("인서트된 수강 신청자: {}", lectureApplicants.size());
-		log.info("업데이트된 수강 신청자: {}", session.getApplicantsCount());
 		assertEquals(lectureApplicants.size(), session.getApplicantsCount());
 		assertEquals(maxCapacity, lectureApplicants.size());
+	}
+
+	@Test
+	@DisplayName("동일한 유저 정보로 같은 특강을 5번 신청했을 때, 1번만 성공")
+	void applyForLecture_duplicateApplication() throws InterruptedException {
+
+		// Given
+		String sessionId = "S001";
+		String userId = "U001";
+
+		int tryCount = 5;
+
+		ExecutorService executorService = Executors.newFixedThreadPool(tryCount);
+		CountDownLatch latch = new CountDownLatch(tryCount);
+
+		// When
+		for(int i = 0; i < tryCount; i++) {
+			LectureDto.LectureApplyRequest request = new LectureDto.LectureApplyRequest(userId, sessionId);
+			executorService.submit(() -> {
+				try {
+					lectureService.applyForLecture(request);
+				} finally {
+					latch.countDown();
+				}
+			});
+		}
+
+		latch.await();
+		executorService.shutdown();
+
+		// Then
+		LectureSession session = lectureRepository.findLectureSession(sessionId).orElseThrow();
+
+		assertEquals(1, session.getApplicantsCount());
 	}
 }

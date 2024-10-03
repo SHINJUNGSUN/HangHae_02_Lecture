@@ -46,4 +46,9 @@ public class LectureRepositoryImpl implements LectureRepository {
     public List<LectureApplicant> findLectureApplicantListBySessionId(String sessionId) {
         return lectureApplicantRepository.findBySessionId(sessionId);
     }
+
+    @Override
+    public boolean existsByUserIdAndSessionId(String userId, String sessionId) {
+        return lectureApplicantRepository.existsByUserIdAndSessionId(userId, sessionId);
+    }
 }

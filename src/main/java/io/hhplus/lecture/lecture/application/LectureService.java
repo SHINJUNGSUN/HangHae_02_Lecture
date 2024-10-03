@@ -5,12 +5,10 @@ import io.hhplus.lecture.common.LectureException;
 import io.hhplus.lecture.lecture.domain.LectureApplicant;
 import io.hhplus.lecture.lecture.domain.LectureRepository;
 import io.hhplus.lecture.lecture.domain.LectureSession;
-import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
@@ -37,14 +35,21 @@ public class LectureService {
                 return new LectureException(LectureErrors.SESSION_NOT_FOUND);
             });
 
-            // 2. 특강 세션 신청 처리
+            // 2. 이미 신청한 특강인지 확인
+            if(lectureRepository.existsByUserIdAndSessionId(request.userId(), request.sessionId())) {
+                log.error(LectureErrors.SESSION_ALREADY_APPLIED.getErrorMessage());
+                throw new LectureException(LectureErrors.SESSION_ALREADY_APPLIED);
+            }
+
+            // 3. 특강 세션 신청 처리
             LectureApplicant newApplicant = session.applyForLecture(request.userId());
 
-            // 3. 새로운 신청자 정보 저장
+            // 4. 새로운 신청자 정보 저장
             return LectureDto.LectureApplyResponse.of(lectureRepository.save(session), lectureRepository.save(newApplicant));
+
         } catch (ObjectOptimisticLockingFailureException e) {
             log.error(LectureErrors.SESSION_APPLICANT_FAIL.getErrorMessage());
-          throw new LectureException(LectureErrors.SESSION_APPLICANT_FAIL);
+            throw new LectureException(LectureErrors.SESSION_APPLICANT_FAIL);
         }
     }
 

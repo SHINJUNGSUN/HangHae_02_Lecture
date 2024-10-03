@@ -141,7 +141,7 @@ void applyForLecture_maxCapacity() throws InterruptedException {
 ```
 > `given` 특강 세션 `S001`의 최대 수강 인원은 `30`명인 세션이 있다.
 >
-> `when` 사용자 `40`명이 동시에 `S001`을 신청한다.
+> `when` 사용자 `40`명이 동시에 `S001`특강을 신청한다.
 >
 > `then` 특강 신청자 테이블의 신청자 수와 특강 세션 테이블의 현재 수강 인원이 같아야 하며, 이는 최대 수강 인원가 같거나 작아야 한다.
 
@@ -225,3 +225,45 @@ Optional<LectureSession> findLectureSessionBySessionId(String sessionId);
 ![img.png](images/img04.png)
 
 완벽하게 동시성 처리가 되었다.
+
+### `Step4`: 동일한 유저 정보로 같은 특강을 5번 신청했을 때, 1번만 성공하는 CASE
+```java
+@Test
+	@DisplayName("동일한 유저 정보로 같은 특강을 5번 신청했을 때, 1번만 성공")
+	void applyForLecture_duplicateApplication() throws InterruptedException {
+
+		// Given
+		String sessionId = "S001";
+		String userId = "U001";
+
+		int tryCount = 5;
+
+		ExecutorService executorService = Executors.newFixedThreadPool(tryCount);
+		CountDownLatch latch = new CountDownLatch(tryCount);
+
+		// When
+		for(int i = 0; i < tryCount; i++) {
+			LectureDto.LectureApplyRequest request = new LectureDto.LectureApplyRequest(userId, sessionId);
+			executorService.submit(() -> {
+				try {
+					lectureService.applyForLecture(request);
+				} finally {
+					latch.countDown();
+				}
+			});
+		}
+
+		latch.await();
+		executorService.shutdown();
+
+		// Then
+		LectureSession session = lectureRepository.findLectureSession(sessionId).orElseThrow();
+
+		assertEquals(1, session.getApplicantsCount());
+	}
+```
+> `given` 특강 세션 `S001`과 사용자 `U001`이 있다.
+>
+> `when` 사용자`U001`은 동시에 5회 `S001`특강을 신청한다.
+>
+> `then` 특강 신청자 수는 1명이어야 한다.
