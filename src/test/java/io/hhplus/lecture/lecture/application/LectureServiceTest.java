@@ -91,6 +91,18 @@ class LectureServiceTest {
     }
 
     @Test
+    @DisplayName("이미 등록한 세션인 경우, 실패")
+    void applyForLecture_throwsException_alreadyApplied() {
+        // Given
+        LectureDto.LectureApplyRequest request = new LectureDto.LectureApplyRequest("U001", "S001");
+
+        when(lectureRepository.existsByUserIdAndSessionId(request.userId(), request.sessionId())).thenReturn(true);
+
+        // When & Then
+        assertThrows(LectureException.class, () -> lectureService.applyForLecture(request));
+    }
+
+    @Test
     @DisplayName("날짜별 특강 조회 성공")
     void searchLectureSessions_success() {
         // Given
